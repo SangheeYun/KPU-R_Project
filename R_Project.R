@@ -43,11 +43,15 @@ waitDailyCall <- subset(dailyCall, dailyCall$AvgWait > mean(dailyCall$AvgWait))
 waitDayCall <- aggregate(AvgWait~Day, waitDailyCall, mean)
 od_waitDayCall <- waitDayCall[order(waitDayCall$Day, decreasing = TRUE), ]
 
+#장애인 콜택시 월별 시간대별 콜 건수
+m_CallTime <- as.matrix(CallTime)
+v_CallTime <- as.vector(m_CallTime)
+v_CallTime.ts <- ts(data = v_CallTime, start = c(1, 1), frequency = 24)
+plot(v_CallTime.ts)
+
 dataOfDay <- merge(dataOfAvgDays, od_waitDayCall) # 요일별 평균 이동거리, 콜건수, 대기시간
 dataOfArea <- merge(Area_data, Data) # 자치구별 평균 방문횟수, 노인시설/현황, 장애인시설/현황, 병원 수, 지하철역 인근정류장 수, 면적, 
-dataOfArea
-dataOfDay
-  dataOfDay[order(dataOfDay$AvgCall, decreasing = TRUE), ]
+dataOfDay[order(dataOfDay$AvgCall, decreasing = TRUE), ]
 dataOfArea[order(dataOfArea$Disabled_Facilities, decreasing = TRUE), ]
 
 
@@ -58,28 +62,28 @@ LFBusData <- merge(LFBus, BusData, by="BusNumber", all=FALSE)
 LFBusData <- LFBusData[order(LFBusData$Date, decreasing = FALSE), ]
 head(LFBusData)
 
-JenBusData <- subset(LFBusData, LFBusData$Date == 201501)
+JanBusData <- subset(LFBusData, LFBusData$Date == 201501)
 FebBusData <- subset(LFBusData, LFBusData$Date == 201502)
 MarBusData <- subset(LFBusData, LFBusData$Date == 201503)
-AplBusData <- subset(LFBusData, LFBusData$Date == 201504)
+AprBusData <- subset(LFBusData, LFBusData$Date == 201504)
 MayBusData <- subset(LFBusData, LFBusData$Date == 201505)
 JunBusData <- subset(LFBusData, LFBusData$Date == 201506)
 JulBusData <- subset(LFBusData, LFBusData$Date == 201507)
 AugBusData <- subset(LFBusData, LFBusData$Date == 201508)
 SepBusData <- subset(LFBusData, LFBusData$Date == 201509)
 OctBusData <- subset(LFBusData, LFBusData$Date == 201510)
-NomBusData <- subset(LFBusData, LFBusData$Date == 201511)
+NovBusData <- subset(LFBusData, LFBusData$Date == 201511)
 DecBusData <- subset(LFBusData, LFBusData$Date == 201512)
 
 # n <- split(JenBusData, JenBusData$BusNumber)
-Jen <-aggregate(JenBusData[,3:52], by=list(JenBusData$BusNumber), FUN=sum)
-Jen <- Jen[c(-2,-3)]
+Jan <-aggregate(JenBusData[,3:52], by=list(JenBusData$BusNumber), FUN=sum)
+Jan <- Jen[c(-2,-3)]
 Feb <-aggregate(JenBusData[,3:52], by=list(JenBusData$BusNumber), FUN=sum)
 Feb <- Jen[c(-2,-3)]
 Mar <-aggregate(JenBusData[,3:52], by=list(JenBusData$BusNumber), FUN=sum)
 Mar <- Jen[c(-2,-3)]
-Apl <-aggregate(JenBusData[,3:52], by=list(JenBusData$BusNumber), FUN=sum)
-Apl <- Jen[c(-2,-3)]
+Apr <-aggregate(JenBusData[,3:52], by=list(JenBusData$BusNumber), FUN=sum)
+Apr <- Jen[c(-2,-3)]
 May <-aggregate(JenBusData[,3:52], by=list(JenBusData$BusNumber), FUN=sum)
 May <- Jen[c(-2,-3)]
 Jun <-aggregate(JenBusData[,3:52], by=list(JenBusData$BusNumber), FUN=sum)
@@ -92,12 +96,12 @@ Sep <-aggregate(JenBusData[,3:52], by=list(JenBusData$BusNumber), FUN=sum)
 Sep <- Jen[c(-2,-3)]
 Oct <-aggregate(JenBusData[,3:52], by=list(JenBusData$BusNumber), FUN=sum)
 Oct <- Jen[c(-2,-3)]
-Nom <-aggregate(JenBusData[,3:52], by=list(JenBusData$BusNumber), FUN=sum)
-Nom <- Jen[c(-2,-3)]
+Nov <-aggregate(JenBusData[,3:52], by=list(JenBusData$BusNumber), FUN=sum)
+Nov <- Jen[c(-2,-3)]
 Dec <-aggregate(JenBusData[,3:52], by=list(JenBusData$BusNumber), FUN=sum)
 Dec <- Jen[c(-2,-3)]
 
-str(Jen)
+str(Jan)
 head(Feb)
 ggplot(Jen, aes(x=Jen$Group.1, y=Jen$X00.Input)) + geom_bar(stat = "identity")
 
