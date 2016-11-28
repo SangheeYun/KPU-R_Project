@@ -21,6 +21,7 @@ Destination <- read.csv("~/Documents/KPUDocument/Programming/DataFile/Destinatio
 BusData <- read.csv("~/Documents/KPUDocument/Programming/DataFile/BusInfo.csv")
 Data <- read.csv("~/Documents/KPUDocument/Programming/DataFile/PeopleFac.csv")
 Subway <- read.csv("~/Documents/KPUDocument/Programming/DataFile/amongSubway.csv")
+CallTime <- read.csv("~/Documents/KPUDocument/Programming/DataFile/dailyCallTime.csv") #월별 시간대별 콜택시 이용현황
 
 #################################장애인 생활권 분석#####################################
 
@@ -42,12 +43,11 @@ waitDailyCall <- subset(dailyCall, dailyCall$AvgWait > mean(dailyCall$AvgWait))
 waitDayCall <- aggregate(AvgWait~Day, waitDailyCall, mean)
 od_waitDayCall <- waitDayCall[order(waitDayCall$Day, decreasing = TRUE), ]
 
-
 dataOfDay <- merge(dataOfAvgDays, od_waitDayCall) # 요일별 평균 이동거리, 콜건수, 대기시간
 dataOfArea <- merge(Area_data, Data) # 자치구별 평균 방문횟수, 노인시설/현황, 장애인시설/현황, 병원 수, 지하철역 인근정류장 수, 면적, 
-str(dataOfArea)
-str(dataOfDay)
-dataOfDay[order(dataOfDay$AvgCall, decreasing = TRUE), ]
+dataOfArea
+dataOfDay
+  dataOfDay[order(dataOfDay$AvgCall, decreasing = TRUE), ]
 dataOfArea[order(dataOfArea$Disabled_Facilities, decreasing = TRUE), ]
 
 
