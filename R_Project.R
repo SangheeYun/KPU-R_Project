@@ -20,29 +20,36 @@ LFBus <- read.csv("~/Documents/KPUDocument/Programming/DataFile/LowFloorBus.csv"
 Destination <- read.csv("~/Documents/KPUDocument/Programming/DataFile/Destination.csv")
 BusData <- read.csv("~/Documents/KPUDocument/Programming/DataFile/BusInfo.csv")
 Data <- read.csv("~/Documents/KPUDocument/Programming/DataFile/PeopleFac.csv")
+Subway <- read.csv("~/Documents/KPUDocument/Programming/DataFile/amongSubway.csv")
 
-
-#################################장애인 생활패턴 분석#####################################
+#################################장애인 생활권 분석#####################################
 
 totalDestination <- aggregate(Times~Area_Gu, Destination, sum)
 od_Destinetion <- totalDestination[order(totalDestination$Times, decreasing = TRUE), ]
 colnames(od_Destinetion) <- c("Area_Gu", "Destinetion_Times")
+Area_data <- merge(od_Destinetion, Subway)
+str(Area_data)
 
 dailyCall$Day <- weekdays(as.Date(dailyCall$Date))
+avgMove <- aggregate(Distance~Day, dailyCall, mean)
 dayCall <- aggregate(CallTotal~Day, dailyCall, mean)
+colnames(avgMove) <- c("Day", "AvgDist")
 colnames(dayCall) <- c("Day", "AvgCall")
-od_dayCall <- dayCall[order(dayCall$Day, decreasing = TRUE), ]
-head(od_dayCall)
+dataOfAvgDays <- merge(avgMove, dayCall)
 
 # n <- mean(dailyCall$AvgWait) #1년간의 평균대시기간 34.59375min
 waitDailyCall <- subset(dailyCall, dailyCall$AvgWait > mean(dailyCall$AvgWait))
 waitDayCall <- aggregate(AvgWait~Day, waitDailyCall, mean)
 od_waitDayCall <- waitDayCall[order(waitDayCall$Day, decreasing = TRUE), ]
 
-dataOfDay <- merge(od_dayCall, od_waitDayCall) # 요일별 평균 콜건수, 대기시간
-dataOfArea <- merge(od_Destinetion, Data) # 자치구별 방문횟수, 노인시설/현황, 장애인시설/현황, 병원 수
-dt_sort <- dataOfArea[order(dataOfArea$Silver_Facilities, decreasing = TRUE), ]
-dt_sort
+
+dataOfDay <- merge(dataOfAvgDays, od_waitDayCall) # 요일별 평균 이동거리, 콜건수, 대기시간
+dataOfArea <- merge(Area_data, Data) # 자치구별 평균 방문횟수, 노인시설/현황, 장애인시설/현황, 병원 수, 지하철역 인근정류장 수, 면적, 
+str(dataOfArea)
+str(dataOfDay)
+dataOfDay[order(dataOfDay$AvgCall, decreasing = TRUE), ]
+dataOfArea[order(dataOfArea$Disabled_Facilities, decreasing = TRUE), ]
+
 
 #################################저상버스 분포 분석#####################################
 str(LFBus)
@@ -90,7 +97,7 @@ Nom <- Jen[c(-2,-3)]
 Dec <-aggregate(JenBusData[,3:52], by=list(JenBusData$BusNumber), FUN=sum)
 Dec <- Jen[c(-2,-3)]
 
-head(Jen)
+str(Jen)
 head(Feb)
 ggplot(Jen, aes(x=Jen$Group.1, y=Jen$X00.Input)) + geom_bar(stat = "identity")
 
