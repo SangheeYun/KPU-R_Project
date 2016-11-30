@@ -21,6 +21,7 @@ Destination <- read.csv("~/Documents/KPUDocument/Programming/DataFile/Destinatio
 BusData <- read.csv("~/Documents/KPUDocument/Programming/DataFile/BusInfo.csv")
 Data <- read.csv("~/Documents/KPUDocument/Programming/DataFile/PeopleFac.csv")
 Subway <- read.csv("~/Documents/KPUDocument/Programming/DataFile/amongSubway.csv")
+SubwayFree <- read.csv("~/Documents/KPUDocument/Programming/DataFile/SubwayFree.csv")
 CallTime <- read.csv("~/Documents/KPUDocument/Programming/DataFile/dailyCallTime.csv", header = FALSE) #월별 시간대별 콜택시 이용현황
 
 
@@ -47,11 +48,7 @@ od_waitDayCall <- waitDayCall[order(waitDayCall$Day, decreasing = TRUE), ]
 dataOfDay <- merge(dataOfAvgDays, od_waitDayCall) # 요일별 평균 이동거리, 콜건수, 대기시간
 dataOfArea <- merge(Area_data, Data) # 자치구별 평균 방문횟수, 노인시설/현황, 장애인시설/현황, 병원 수, 지하철역 인근정류장 수, 면적, 
 dataOfDay[order(dataOfDay$AvgCall, decreasing = TRUE), ]
-dataOfArea[order(dataOfArea$Area_Gu, decreasing = TRUE), ]
-
-model1 <- lm(Destinetion_Times~Area_km.2+Silver_Facilities+Disabled_Facilities+Silver_Total, data=dataOfArea)
-summary.aov(model1)
-with(dataOfArea, plot(Area_km.2, Disabled_Facilities, cex=.7, pch=as.numeric(dataOfArea$Area_Gu)))
+dataOfArea[order(dataOfArea$Destinetion_Times, decreasing = FALSE), ]
 
 ####################################시계열 분 석(시간별)#########################################
 
@@ -81,61 +78,9 @@ plot(s_CallTime)
 
 ####################################회 귀 분 석(지역별)#########################################
 
-Disabled <- data.frame(dataOfArea$Area_Gu,dataOfArea$Destinetion_Times, dataOfArea$Disabled_Total, dataOfArea$Disabled_Facilities)
-plot(Disabled$dataOfArea.Destinetion_Times~Disabled$dataOfArea.Disabled_Total+Disabled$dataOfArea.Disabled_Facilities)
+model1 <- lm(Destinetion_Times~Area_km.2+Silver_Facilities+Disabled_Facilities+Silver_Total, data=dataOfArea)
+summary(model1)
 cor(Disabled$dataOfArea.Destinetion_Times, Disabled$dataOfArea.Disabled_Total) #상관계수 -1에 가까울수록 역의 상관관계 0: 관계없음 1: 정의 상관관계
-r <- lm(Disabled$dataOfArea.Destinetion_Times~Disabled$dataOfArea.Disabled_Total)
 
-#################################저상버스 분포 분석#####################################
-str(LFBus)
-str(BusData)
-LFBusData <- merge(LFBus, BusData, by="BusNumber", all=FALSE)
-LFBusData <- LFBusData[order(LFBusData$Date, decreasing = FALSE), ]
-head(LFBusData)
-
-JanBusData <- subset(LFBusData, LFBusData$Date == 201501)
-FebBusData <- subset(LFBusData, LFBusData$Date == 201502)
-MarBusData <- subset(LFBusData, LFBusData$Date == 201503)
-AprBusData <- subset(LFBusData, LFBusData$Date == 201504)
-MayBusData <- subset(LFBusData, LFBusData$Date == 201505)
-JunBusData <- subset(LFBusData, LFBusData$Date == 201506)
-JulBusData <- subset(LFBusData, LFBusData$Date == 201507)
-AugBusData <- subset(LFBusData, LFBusData$Date == 201508)
-SepBusData <- subset(LFBusData, LFBusData$Date == 201509)
-OctBusData <- subset(LFBusData, LFBusData$Date == 201510)
-NovBusData <- subset(LFBusData, LFBusData$Date == 201511)
-DecBusData <- subset(LFBusData, LFBusData$Date == 201512)
-
-# n <- split(JenBusData, JenBusData$BusNumber)
-Jan <-aggregate(JenBusData[,3:52], by=list(JenBusData$BusNumber), FUN=sum)
-Jan <- Jen[c(-2,-3)]
-Feb <-aggregate(JenBusData[,3:52], by=list(JenBusData$BusNumber), FUN=sum)
-Feb <- Jen[c(-2,-3)]
-Mar <-aggregate(JenBusData[,3:52], by=list(JenBusData$BusNumber), FUN=sum)
-Mar <- Jen[c(-2,-3)]
-Apr <-aggregate(JenBusData[,3:52], by=list(JenBusData$BusNumber), FUN=sum)
-Apr <- Jen[c(-2,-3)]
-May <-aggregate(JenBusData[,3:52], by=list(JenBusData$BusNumber), FUN=sum)
-May <- Jen[c(-2,-3)]
-Jun <-aggregate(JenBusData[,3:52], by=list(JenBusData$BusNumber), FUN=sum)
-Jun <- Jen[c(-2,-3)]
-Jul <-aggregate(JenBusData[,3:52], by=list(JenBusData$BusNumber), FUN=sum)
-Jul <- Jen[c(-2,-3)]
-Aug <-aggregate(JenBusData[,3:52], by=list(JenBusData$BusNumber), FUN=sum)
-Aug <- Jen[c(-2,-3)]
-Sep <-aggregate(JenBusData[,3:52], by=list(JenBusData$BusNumber), FUN=sum)
-Sep <- Jen[c(-2,-3)]
-Oct <-aggregate(JenBusData[,3:52], by=list(JenBusData$BusNumber), FUN=sum)
-Oct <- Jen[c(-2,-3)]
-Nov <-aggregate(JenBusData[,3:52], by=list(JenBusData$BusNumber), FUN=sum)
-Nov <- Jen[c(-2,-3)]
-Dec <-aggregate(JenBusData[,3:52], by=list(JenBusData$BusNumber), FUN=sum)
-Dec <- Jen[c(-2,-3)]
-
-str(Jan)
-head(Feb)
-ggplot(Jen, aes(x=Jen$Group.1, y=Jen$X00.Input)) + geom_bar(stat = "identity")
-
-
-
+with(dataOfArea, plot(Destinetion_Times, Disabled_Facilities, cex=.7, pch=as.numeric(dataOfArea$Area_Gu))) # 장애인 시설과 장애인 이동패턴의 상관관계
 
