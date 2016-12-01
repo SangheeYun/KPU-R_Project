@@ -55,14 +55,13 @@ dataOfArea[order(dataOfArea$Destinetion_Times, decreasing = FALSE), ]
 m_CallTime <- as.matrix(CallTime)
 v_CallTime <- as.vector(m_CallTime)
 v_CallTime.ts <- ts(data = v_CallTime, start = 1, frequency = 24) # 장애인 콜택시 월별 이용현황 시각화 
-v_CallTime.ts
 plot(v_CallTime.ts)
 abline(a=400, b=0, col="red")
 
 fill_colors = c() # list or vector in color info 
 
 for (i in 1:length(s2_CallTime)){ # 1700명 이상의 교통이동이 이루어지는 시간대와 그렇지않은 시간대의 구분
-  if (s1_CallTime[i] > 1700){ # s1 or s2
+  if (s1_CallTime[i] > 400){ # s1 or s2
     fill_colors = c(fill_colors, "#821122")
   }else {
     fill_colors = c(fill_colors, "#cccccc")
@@ -70,16 +69,25 @@ for (i in 1:length(s2_CallTime)){ # 1700명 이상의 교통이동이 이루어�
 }
 
 # 1월~6월까지의 데이터
-s1_CallTime <- apply(CallTime[,1:6], 1, sum)
-barplot(s1_CallTime, main = "Jan to Jul", names.arg = 0:23, col= fill_colors, border = NA)
+s1_CallTime <- apply(CallTime[,1:6], 1, mean)
+barplot(s1_CallTime, main = "Jan to Jun", names.arg = 0:23, col= fill_colors, border = NA)
 #plot(s1_CallTime, type = "h", main = "Jan to Jun")
 #abline(a=1550, b=0, col="red")
 
 # 7월~10월까지의 데이터
-s2_CallTime <- apply(CallTime[7:10], 1, sum)
+s2_CallTime <- apply(CallTime[7:10], 1, mean)
 barplot(s2_CallTime, main = "Jul to Oct", names.arg = 0:23, col= fill_colors, border = NA)
 #plot(s2_CallTime, type = "h", main = "Jul to Oct")
 #abline(a=1500, b=0, col="red")
+
+##저상버스 패턴분석
+LFBusData <- merge(LFBus, BusData, by="BusNumber", all=FALSE)
+LFBusData <- LFBusData[order(LFBusData$Date, decreasing = FALSE), ]
+BusData <- aggregate(LFBusData[,3:52], by = list(LFBusData$BusNumber), FUN=mean)
+BusData <- BusData[c(-1,-2,-3)]
+m_Bus <- as.matrix(BusData)
+m_Bus.ts <- ts(data = m_Bus, start =1, frequency = 48 )
+barplot(m_Bus.ts, main = "LowFloorBus")
 
 ####################################회 귀 분 석(지역별)#########################################
 cor(dataOfArea$Disabled_Facilities, dataOfArea$Destinetion_Times) # 장애인 시설 - 0.5892295 정상관
