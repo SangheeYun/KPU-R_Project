@@ -55,32 +55,42 @@ dataOfArea[order(dataOfArea$Destinetion_Times, decreasing = FALSE), ]
 m_CallTime <- as.matrix(CallTime)
 v_CallTime <- as.vector(m_CallTime)
 v_CallTime.ts <- ts(data = v_CallTime, start = 1, frequency = 24) # 장애인 콜택시 월별 이용현황 시각화 
+v_CallTime.ts
 plot(v_CallTime.ts)
+abline(a=400, b=0, col="red")
 
-m_JanCallTime <- as.matrix(CallTime[,1])
-v_JanCallTime <- as.vector(m_JanCallTime)
-v_JanCallTime.ts <- ts(data = v_JanCallTime, start = 1, frequency = 1) # 1월 장애인 콜택시 시간별 이용현황 시각화
-m_FebCallTime <- as.matrix(CallTime[,2])
-v_FebCallTime <- as.vector(m_FebCallTime)
-v_FebCallTime.ts <- ts(data = v_FebCallTime, start = 1, frequency = 1) # 2월 장애인 콜택시 시간별 이용현황 시각화
-m_MarCallTime <- as.matrix(CallTime[,3])
-v_MarCallTime <- as.vector(m_MarCallTime)
-v_MarCallTime.ts <- ts(data = v_MarCallTime, start = 1, frequency = 1) # 3월 장애인 콜택시 시간별 이용현황 시각화
-m_AprCallTime <- as.matrix(CallTime[,4])
-v_AprCallTime <- as.vector(m_AprCallTime)
-v_AprCallTime.ts <- ts(data = v_AprCallTime, start = 1, frequency = 1) # 4월 장애인 콜택시 시간별 이용현황 시각화
-m_MayCallTime <- as.matrix(CallTime[,5])
-v_MayCallTime <- as.vector(m_mayCallTime)
-v_MayCallTime.ts <- ts(data = v_mayCallTime, start = 1, frequency = 1) # 5월 장애인 콜택시 시간별 이용현황 시각화
+fill_colors = c() # list or vector in color info 
 
-s_CallTime <- apply(CallTime[,1:10], 1, sum)
-plot(s_CallTime)
+for (i in 1:length(s2_CallTime)){ # 1700명 이상의 교통이동이 이루어지는 시간대와 그렇지않은 시간대의 구분
+  if (s1_CallTime[i] > 1700){ # s1 or s2
+    fill_colors = c(fill_colors, "#821122")
+  }else {
+    fill_colors = c(fill_colors, "#cccccc")
+  }
+}
+
+# 1월~6월까지의 데이터
+s1_CallTime <- apply(CallTime[,1:6], 1, sum)
+barplot(s1_CallTime, main = "Jan to Jul", names.arg = 0:23, col= fill_colors, border = NA)
+#plot(s1_CallTime, type = "h", main = "Jan to Jun")
+#abline(a=1550, b=0, col="red")
+
+# 7월~10월까지의 데이터
+s2_CallTime <- apply(CallTime[7:10], 1, sum)
+barplot(s2_CallTime, main = "Jul to Oct", names.arg = 0:23, col= fill_colors, border = NA)
+#plot(s2_CallTime, type = "h", main = "Jul to Oct")
+#abline(a=1500, b=0, col="red")
 
 ####################################회 귀 분 석(지역별)#########################################
-
-model1 <- lm(Destinetion_Times~Area_km.2+Silver_Facilities+Disabled_Facilities+Silver_Total, data=dataOfArea)
-summary(model1)
-cor(Disabled$dataOfArea.Destinetion_Times, Disabled$dataOfArea.Disabled_Total) #상관계수 -1에 가까울수록 역의 상관관계 0: 관계없음 1: 정의 상관관계
-
+cor(dataOfArea$Disabled_Facilities, dataOfArea$Destinetion_Times) # 장애인 시설 - 0.5892295 정상관
+cor(dataOfArea$Disabled_Total, dataOfArea$Destinetion_Times) # 장애인 거주 - 0.6170059 정상관
+Disabled1 <- lm(Destinetion_Times~Disabled_Total, data=dataOfArea)
+Disabled2 <- lm(Destinetion_Times~Disabled_Facilities, data=dataOfArea)
+summary(Disabled1) # model 평가
+summary(Disabled2)
+with(dataOfArea, plot(Destinetion_Times, Disabled_Total, cex=.7, pch=as.numeric(dataOfArea$Area_Gu))) # 장애인 거주현황과 장애인 이동패턴의 상관관계
 with(dataOfArea, plot(Destinetion_Times, Disabled_Facilities, cex=.7, pch=as.numeric(dataOfArea$Area_Gu))) # 장애인 시설과 장애인 이동패턴의 상관관계
+
+plot(Disabled1)
+plot(Disabled2)
 
