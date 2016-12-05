@@ -30,8 +30,7 @@ WaitTime <- read.csv("~/Documents/KPUDocument/Programming/DataFile/dailyWait.csv
 totalDestination <- aggregate(Times~Area_Gu, Destination, sum)
 od_Destinetion <- totalDestination[order(totalDestination$Times, decreasing = TRUE), ]
 colnames(od_Destinetion) <- c("Area_Gu", "Destinetion_Times")
-Area_data <- merge(od_Destinetion, Subway)
-str(Area_data)
+Area_data <- merge(od_Destinetion, Subway)=
 
 dailyCall$Day <- weekdays(as.Date(dailyCall$Date))
 avgMove <- aggregate(Distance~Day, dailyCall, mean)
@@ -48,7 +47,14 @@ od_waitDayCall <- waitDayCall[order(waitDayCall$Day, decreasing = TRUE), ]
 dataOfDay <- merge(dataOfAvgDays, od_waitDayCall) # 요일별 평균 이동거리, 콜건수, 대기시간
 dataOfArea <- merge(Area_data, Data) # 자치구별 평균 방문횟수, 노인시설/현황, 장애인시설/현황, 병원 수, 지하철역 인근정류장 수, 면적, 
 dataOfDay[order(dataOfDay$AvgCall, decreasing = TRUE), ]
-dataOfArea[order(dataOfArea$Destinetion_Times, decreasing = FALSE), ]
+dataOfArea[order(dataOfArea$Silver_Total, decreasing = TRUE), ]
+
+print <- subset(dataOfArea, select = c(Area_Gu, Disabled_Facilities))
+print[order(print$Disabled_Facilities, decreasing = TRUE), ]
+SubwayFree
+
+aggregate(FreeIn~Area_Gu, SubwayFree, sum)
+aggregate(FreeOut~Area_Gu, SubwayFree, sum)
 
 ####################################시계열 분 석(시간별)#########################################
 
